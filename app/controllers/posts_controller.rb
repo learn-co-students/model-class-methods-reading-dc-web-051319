@@ -1,7 +1,23 @@
-class PostsController < ApplicationController
+# frozen_string_literal: true
 
+class PostsController < ApplicationController
   def index
-    @posts = Post.all
+    # provide a list of authors to the view for the filter control
+    @authors = Author.all
+
+    # filter the @posts list based on user input
+    @posts = if !params[:author].blank?
+               Post.by_author(params[:author])
+             elsif !params[:date].blank?
+               if params[:date] == 'Today'
+                 Post.from_today
+               else
+                 Post.old_news
+               end
+             else
+               # if no filters are applied, show all posts
+               Post.all
+             end
   end
 
   def show
